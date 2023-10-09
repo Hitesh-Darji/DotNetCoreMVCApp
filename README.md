@@ -6,3 +6,4 @@ It is implemented using:
 3. ASP.NET Identity
 4. Design pattern: Unitt of work with repository pattern
 5. Bootstrap template: AdminLTE
+6. Integration of Log4Net 
