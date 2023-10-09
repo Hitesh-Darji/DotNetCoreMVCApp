@@ -1,0 +1,127 @@
+﻿@using DotNetCoreMVCApp.Models.Web;
+@model IEnumerable<CountryViewModel>
+
+@{
+    ViewData["Title"] = "Manage Country";
+}
+
+<!-- Content Header (Page header) -->
+<section class="content-header">
+    <div class="container-fluid">
+        <div class="row mb-2">
+            <div class="col-sm-6">
+                <h1>Manage Countries</h1>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <a asp-action="Create">Add New Country</a>
+                    </div>
+                    <!-- /.card-header -->
+                    <div class="card-body">
+                        <table id="countryTable" class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>@Html.DisplayNameFor(model => model.Code)</th>
+                                    <th>@Html.DisplayNameFor(model => model.Name)</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Code)
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(modelItem => item.Name)
+                                        </td>
+                                        <td class="text-right">
+                                            <a class="btn btn-info btn-sm" asp-controller="Country" asp-action="Edit" asp-route-id="@item.Id">
+                                                <i class="fas fa-pencil-alt">
+                                                </i>
+                                                Edit
+                                            </a>
+                                            <a class="btn btn-danger btn-sm" title="Delete" data-item-id="@item.Id" data-item-name="@item.Name" data-toggle="modal" data-target="#modal-delete">
+                                                <i class="fas fa-trash">
+                                                </i>
+                                                Delete
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- /.card-body -->
+                </div>
+                <!-- /.card -->
+            </div>
+        </div>
+    </div>
+
+    <!-- delete modal -->
+    <div class="modal fade" id="modal-delete">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h4 class="modal-title">Manage Countries</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure to remove country: <span id="selectedCountryNameLbl"></span>?</p>
+                </div>
+                <div class="modal-footer justify-content-between">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-danger btn-delete">Delete</button>
+                </div>
+            </div>
+            <!-- /.modal-content -->
+        </div>
+        <!-- /.modal-dialog -->
+    </div>
+    <!-- delete modal -->
+</section>
+
+@section Scripts {
+    <script type="text/javascript" async>
+        $(document).ready(function () {
+            $('#countryTable').DataTable({
+                "paging": true,
+                "lengthChange": false,
+                "searching": true,
+                "ordering": false,
+                "info": true,
+                "autoWidth": false,
+                "responsive": true,
+                "oLanguage": {
+                    "sEmptyTable": "No data available"
+                }
+            });
+
+            $('#modal-delete').on('show.bs.modal', function (e) {
+                var data = $(e.relatedTarget).data();
+                $('#selectedCountryNameLbl', this).text(data.itemName);
+                $('.btn-delete', this).data('itemId', data.itemId);
+            });
+
+            $('#modal-delete').on('click', '.btn-delete', function (e) {
+                var $modalDiv = $(e.delegateTarget);
+                var id = $(this).data('itemId');
+                $.post('/Country/Delete/' + id).then(function () {
+                    location.reload();
+                });
+            });
+        });
+    </script>
+}
